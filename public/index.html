@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  	<meta name="author" content="lars.wessels@iosb.fraunhofer.de">
+  	<meta name="description" content="Demo-Server für Mikroprojekt Fraunhofer IOSB / GlobalFlow GmbH / Karle Recycling">
+  	<title>GlobalFlow GmbH | Development Server</title>
+    <style>
+  	@font-face {
+  		font-family: "Oswald-ExtraLight";
+  		src: url("//fonts.gstatic.com/s/oswald/v16/GwZ_PiN1Aind9Eyjp868E_Y6323mHUZFJMgTvxaG2iE.eot?#iefix") format("eot"),
+  			 url("//fonts.gstatic.com/s/oswald/v16/GwZ_PiN1Aind9Eyjp868E1tXRa8TVwTICgirnJhmVJw.woff2") format("woff2"),
+  			 url("//fonts.gstatic.com/s/oswald/v16/GwZ_PiN1Aind9Eyjp868Ez8E0i7KZn-EPnyo3HZu7kw.woff") format("woff"),
+  			 url("//fonts.gstatic.com/s/oswald/v16/GwZ_PiN1Aind9Eyjp868E6CWcynf_cDxXwCLxiixG1c.ttf") format("truetype"),
+  			 url("//fonts.gstatic.com/l/font?kit=GwZ_PiN1Aind9Eyjp868E5bd9NUM7myrQQz30yPaGQ4&skey=bb2021537ac38f74&v=v16#Oswald") format("svg");
+  	 }
+
+  	body {
+  		padding: 3px 3px 3px 3px;
+  		background-color: rgb(106, 164, 38);
+  		font-family: oswald-extralight,sans-serif;
+  		color: white;
+  		text-align: center;
+  	}
+
+  	</style>
+
+    <!-- Import jQuery -->
+
+    <script
+			  src="https://code.jquery.com/jquery-3.2.1.min.js"
+			  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+			  crossorigin="anonymous"></script>
+    <script
+			  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+			  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+			  crossorigin="anonymous"></script>
+
+
+    <!-- Import Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Import Lodash (Needed for gridstack) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.5.0/lodash.min.js"></script>
+
+    <!-- Import gridstack -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/0.2.6/gridstack.min.css" />
+    <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/0.2.6/gridstack.min.js'></script>
+
+    <!-- Import RGraph -->
+    <script src="lib/RGraph.common.core.js"></script>
+    <script src="lib/RGraph.gauge.js"></script>
+    <script src="lib/RGraph.scatter.js"></script>
+    <script src="lib/RGraph.line.js"></script>
+    <script src="lib/RGraph.thermometer.js"></script>
+    <script src="lib/RGraph.bar.js"></script>
+
+    <!-- Import Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+
+    <!-- Import MQTT.js -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+    <!-- Import IoT-WebDashboard -->
+    <script src="iotwebdashboard.js"></script>
+    <link href="iotwebdashboard.css" id="stylesheet" rel="stylesheet">
+    <style type="text/css">
+            body { background: rgb(106, 164, 38) !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+    </style>
+</head>
+
+<body>
+<a href="https://www.global-flow.de"><img src="img/gf_logo.png" alt="GlobalFlow.de" width="250"></a>
+
+<div id="iot-db" style="margin-right: auto; margin-left: auto; width: 1200px; height: 900px;">
+    <h3 id="headliner">IoT-WebDashboard</h3>
+    <p>
+        loading...
+    </p>
+</div>
+</p>
+<p style="font-size: 9pt; margin-top: 10px">
+  <a href="https://www.global-flow.de/ueber-uns">Über uns</a> |
+  <a href="https://www.global-flow.de/kontakt">Kontakt</a> |
+  <a href="https://www.global-flow.de/impressum">Impressum</a>
+</p>
+
+
+<script>
+    var data= {"dashboardConfig":{"serverList":[{"name":"Standard","url":"https://81.169.204.149:8080/FROST-Server/v1.0"}],"title":"Dashboard"},"widgetConfig":{"widgetDataArray":[{"configurableData":{"title":{"data":"Container 1","type":1},"backgroundGridBorder":{"data":false,"type":3},"backgroundGridVlines":{"data":false,"type":3},"backgroundBarcolor1":{"data":"#ffffff","type":0},"backgroundBarcolor2":{"data":"#ffffff","type":0},"backgroundGridColor":{"data":"#000000","type":0},"tickmarks":{"data":"circle","type":1},"ticksize":{"data":5,"type":2},"line":{"data":true,"type":3},"lineColors":{"data":[{"data":{"lineColor":{"data":"#000000","type":0,"options":null}},"type":9,"options":null}],"type":4},"titleXaxis":{"data":"Time","type":1},"titleYaxis":{"data":"cm","type":1},"ymin":{"data":0,"type":7},"pointColor":{"data":"#000000","type":0},"labelSteps":{"data":4,"type":2},"timeIntervalRelative":{"data":true,"type":3},"timeIntervalUnit":{"data":4,"type":6,"options":{"second":1,"minute":2,"hour":3,"day":4,"month":5,"year":6}},"timeInterval":{"data":7,"type":2},"startTime":{"data":"2018-10-10T13:21:17.550Z","type":5},"endTime":{"data":"2018-10-16T13:22:17.550Z","type":5},"sensorThingsConfiguration":{"data":[{"data":{"dataStreamUrl":{"data":"https://81.169.204.149:8080/FROST-Server/v1.0/Datastreams(1)","type":8,"options":null},"mqttEnabled":{"data":false,"type":3,"options":null},"mqttUrl":{"data":"","type":1,"options":null},"mqttBaseTopic":{"data":"","type":1,"options":null},"updateIntervalMs":{"data":60000,"type":2,"options":null}},"type":9,"options":null}],"type":4}},"position":{"x":0,"y":0},"size":{"height":5,"width":6},"type":3},{"configurableData":{"title":{"data":"Sensor Battery","type":1},"backgroundGridBorder":{"data":false,"type":3},"backgroundGridVlines":{"data":false,"type":3},"backgroundBarcolor1":{"data":"#ffffff","type":0},"backgroundBarcolor2":{"data":"#ffffff","type":0},"backgroundGridColor":{"data":"#000000","type":0},"tickmarks":{"data":"circle","type":1},"ticksize":{"data":5,"type":2},"line":{"data":true,"type":3},"lineColors":{"data":[{"data":{"lineColor":{"data":"#000000","type":0,"options":null}},"type":9,"options":null}],"type":4},"titleXaxis":{"data":"Time","type":1},"titleYaxis":{"data":"V","type":1},"ymin":{"data":0,"type":7},"pointColor":{"data":"#000000","type":0},"labelSteps":{"data":4,"type":2},"timeIntervalRelative":{"data":true,"type":3},"timeIntervalUnit":{"data":4,"type":6,"options":{"second":1,"minute":2,"hour":3,"day":4,"month":5,"year":6}},"timeInterval":{"data":7,"type":2},"startTime":{"data":"2018-10-07T13:21:48.090Z","type":5},"endTime":{"data":"2018-10-16T13:22:48.090Z","type":5},"sensorThingsConfiguration":{"data":[{"data":{"dataStreamUrl":{"data":"https://81.169.204.149:8080/FROST-Server/v1.0/Datastreams(8)","type":8,"options":null},"mqttEnabled":{"data":false,"type":3,"options":null},"mqttUrl":{"data":"","type":1,"options":null},"mqttBaseTopic":{"data":"","type":1,"options":null},"updateIntervalMs":{"data":60000,"type":2,"options":null}},"type":9,"options":null}],"type":4}},"position":{"x":6,"y":0},"size":{"height":5,"width":6},"type":3},{"configurableData":{"title":{"data":"Container 1","type":1},"valueSize":{"data":80,"type":2},"unitSize":{"data":70,"type":2},"unit":{"data":"cm","type":1},"timeIntervalRelative":{"data":true,"type":3},"timeIntervalUnit":{"data":5,"type":6,"options":{"second":1,"minute":2,"hour":3,"day":4,"month":5,"year":6}},"timeInterval":{"data":5,"type":2},"startTime":{"data":"2018-10-15T13:23:22.170Z","type":5},"endTime":{"data":"2018-10-16T13:23:22.170Z","type":5},"sensorThingsConfiguration":{"data":[{"data":{"dataStreamUrl":{"data":"https://81.169.204.149:8080/FROST-Server/v1.0/Datastreams(1)","type":8,"options":null},"mqttEnabled":{"data":false,"type":3,"options":null},"mqttUrl":{"data":"","type":1,"options":null},"mqttBaseTopic":{"data":"","type":1,"options":null},"updateIntervalMs":{"data":60000,"type":2,"options":null}},"type":9,"options":null}],"type":4}},"position":{"x":0,"y":5},"size":{"height":3,"width":6},"type":5},{"configurableData":{"title":{"data":"Sensor Battery","type":1},"valueSize":{"data":80,"type":2},"unitSize":{"data":70,"type":2},"unit":{"data":"V","type":1},"timeIntervalRelative":{"data":true,"type":3},"timeIntervalUnit":{"data":5,"type":6,"options":{"second":1,"minute":2,"hour":3,"day":4,"month":5,"year":6}},"timeInterval":{"data":5,"type":2},"startTime":{"data":"2018-10-17T07:48:42.550Z","type":5},"endTime":{"data":"2018-10-17T07:48:42.550Z","type":5},"sensorThingsConfiguration":{"data":[{"data":{"dataStreamUrl":{"data":"https://81.169.204.149:8080/FROST-Server/v1.0/Datastreams(8)","type":8,"options":null},"mqttEnabled":{"data":false,"type":3,"options":null},"mqttUrl":{"data":"","type":1,"options":null},"mqttBaseTopic":{"data":"","type":1,"options":null},"updateIntervalMs":{"data":60000,"type":2,"options":null}},"type":9,"options":null}],"type":4}},"position":{"x":6,"y":5},"size":{"height":3,"width":6},"type":5}]}};
+
+    iotDB = window.iotDB;
+    iotDB.onLoad = function () {
+      var userConfig = iotDB.importUserConfigJSON(data);
+        //Import userConfig here
+    };
+    iotDB.onSaveConfig = function () {
+        var userConfig = iotDB.exportUserConfig();
+        //Save the config to CMS here
+    };
+    iotDB.onLoadConfig = function () {
+        //Get to user config here
+        iotDB.importUserConfig(userConfig);
+    };
+    iotDB.create({
+        "disableImportExportCMS": true,
+        "disableDownloadUpload": true,
+        "disableConfiguration": true,
+        "backgroundTransparent": true,
+        "enableNoDistraction": false,
+        "baseDir": "./",
+        "language": "en"
+    });
+</script>
+</body>
